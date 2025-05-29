@@ -1,0 +1,88 @@
+spring:
+  application:
+    name: agentic-ai-workflow
+
+  # Database Configuration
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  # MCP Server Tool Registration
+  ai:
+    mcp:
+      client:
+        enabled: true
+        toolcallback:
+          enabled: true
+        sse:
+          connections:
+            server1:
+              url: http://mcp-server:8081
+
+    # Vector Store Configuration
+    vectorstore:
+      pgvector:
+        initialize:
+          schema: true
+
+# Vector Store Initialization Control
+app:
+  vectorstore:
+    initialize: ${VECTORSTORE_INITIALIZE:false}
+
+# Logging
+logging:
+  level:
+    org:
+      springframework:
+        ai: DEBUG
+        jdbc: DEBUG
+    io:
+      modelcontextprotocol: TRACE
+    demo:
+      ai:
+        agentic: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: bedrock
+  ai:
+    model:
+      embedding: bedrock-cohere
+    bedrock:
+      aws:
+        region: ${AWS_REGION:us-east-1}
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+        session-token: ${AWS_SESSION_TOKEN}
+      converse:
+        chat:
+          options:
+            model: amazon.nova-pro-v1:0
+    vectorstore:
+      pgvector:
+        dimensions: 1024
+
+---
+spring:
+  config:
+    activate:
+      on-profile: ollama
+  ai:
+    model:
+      embedding: ollama
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://ollama:11434}
+      chat:
+        options:
+          model: llama3.2:1b
+      embedding:
+        enabled: true
+        options:
+          model: nomic-embed-text
+    vectorstore:
+      pgvector:
+        dimensions: 768
