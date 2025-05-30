@@ -37,7 +37,7 @@ ALTER SEQUENCE public.dog_id_seq
 
 -- INSERT: public.dog
 
-INSERT INTO public.dog (name, owner, description) VALUES ('Prancer', 'Natalie', 'Small chihuahua with neurotic behavior, doesn't like men or children, prefers to be left alone but fiercely loyal.');
+INSERT INTO public.dog (name, owner, description) VALUES ('Prancer', 'Natalie', 'Small chihuahua with neurotic behavior, do not like men or children, prefers to be left alone but fiercely loyal.');
 INSERT INTO public.dog (name, owner, description) VALUES ('Buddy', 'Jack', 'Playful golden retriever who loves fetch and swimming.');
 INSERT INTO public.dog (name, owner, description) VALUES ('Luna', 'Emily', 'Calm husky with a gentle demeanor and expressive blue eyes.');
 INSERT INTO public.dog (name, owner, description) VALUES ('Max', 'Ava', 'Energetic beagle who enjoys long walks and sniffing everything.');

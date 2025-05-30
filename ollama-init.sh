@@ -8,7 +8,7 @@ sleep 10
 
 # Pull required models
 ollama pull nomic-embed-text:latest
-ollama pull llama3.2:1b
+ollama pull mistral:7b
 
 # Wait for all background processes
-wait 
+wait

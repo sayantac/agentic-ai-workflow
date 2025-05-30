@@ -1,4 +1,21 @@
 services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    pull_policy: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./ollama-init.sh:/ollama-init.sh
+    healthcheck:
+      test: [ "CMD-SHELL", "bash -c '</dev/tcp/localhost/11434'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    entrypoint: [ "/bin/bash", "/ollama-init.sh" ]
+
   postgres:
     image: pgvector/pgvector:pg17
     container_name: postgres
@@ -18,7 +35,7 @@ services:
       retries: 5
 
   mcp-server:
-    image: mcp-server:1.0
+    image: mcp-server:latest
     container_name: mcp-server
     ports:
       - "8081:8081"
@@ -27,23 +44,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    pull_policy: always
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-      - ./ollama-init.sh:/ollama-init.sh
-    healthcheck:
-      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/11434'"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    entrypoint: ["/bin/bash", "/ollama-init.sh"]
 
   agentic-ai-workflow:
     build:

@@ -23,8 +23,9 @@ spring:
     # Vector Store Configuration
     vectorstore:
       pgvector:
-        initialize:
-          schema: true
+        initialize-schema: true
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
 
 # Vector Store Initialization Control
 app:
@@ -65,6 +66,7 @@ spring:
     vectorstore:
       pgvector:
         dimensions: 1024
+        table-name: bedrock_vector_store
 
 ---
 spring:
@@ -76,13 +78,15 @@ spring:
       embedding: ollama
     ollama:
       base-url: ${OLLAMA_BASE_URL:http://ollama:11434}
+      init:
+        pull-model-strategy: when_missing
       chat:
         options:
-          model: llama3.2:1b
+          model: mistral
       embedding:
-        enabled: true
         options:
           model: nomic-embed-text
     vectorstore:
       pgvector:
         dimensions: 768
+        table-name: ollama_vector_store
