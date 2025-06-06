@@ -11,23 +11,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Configuration
-public class ClientConfig {
+@Profile("bedrock")
+public class BedrockConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(ClientConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(BedrockConfig.class);
     private final DogRepository dogRepository;
     private final VectorStore vectorStore;
 
     @Value("${app.vectorstore.initialize}")
     private boolean vectorStoreInitialize;
 
-    public ClientConfig(DogRepository dogRepository, VectorStore vectorStore) {
+    public BedrockConfig(DogRepository dogRepository, VectorStore vectorStore) {
         this.dogRepository = dogRepository;
         this.vectorStore = vectorStore;
-        log.info("ClientConfig initialized with vectorStoreInitialize={}", vectorStoreInitialize);
     }
 
     @Bean
@@ -53,18 +55,15 @@ public class ClientConfig {
         log.info("Starting vector store initialization. vectorStoreInitialize={}", vectorStoreInitialize);
         if(vectorStoreInitialize) {
             try {
-                log.info("Fetching dogs from repository...");
                 var dogs = dogRepository.findAll();
-                log.info("Found {} dogs in repository", dogs.size());
-                
                 var count = new AtomicInteger();
+
                 dogs.forEach(dog -> {
                     try {
                         var dogument = new Document("id: %s, name: %s, description: %s".formatted(
                                 dog.id(), dog.name(), dog.description()));
                         vectorStore.add(List.of(dogument));
                         count.incrementAndGet();
-                        log.debug("Added dog to vector store: {}", dog.name());
                     } catch (Exception e) {
                         log.error("Error adding dog {} to vector store: {}", dog.name(), e.getMessage());
                     }
@@ -74,7 +73,7 @@ public class ClientConfig {
                 log.error("Error during vector store initialization: {}", e.getMessage(), e);
             }
         } else {
-            log.info("Vector store initialization skipped as vectorStoreInitialize is false");
+            log.info("Vector store initialization skipped as vectorStoreInitialize={}", vectorStoreInitialize);
         }
     }
 }

@@ -1,7 +1,7 @@
 package demo.ai.agentic.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -15,31 +15,31 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@Profile("bedrock")
-public class AdoptionsAssistantController {
+@Profile("ollama")
+public class DocumentSearchController {
 
-    private final ChatClient singularity;
-    private final Map<String, PromptChatMemoryAdvisor> advisorMap = new ConcurrentHashMap<>();
+    private final ChatClient ragChatClient;
+    private final Map<String, MessageChatMemoryAdvisor> advisorMap = new ConcurrentHashMap<>();
     private final QuestionAnswerAdvisor questionAnswerAdvisor;
 
-    AdoptionsAssistantController(ChatClient singularity, VectorStore vectorStore) {
-        this.singularity = singularity;
+    DocumentSearchController(ChatClient chatClient, VectorStore vectorStore) {
+        this.ragChatClient = chatClient;
         this.questionAnswerAdvisor = new QuestionAnswerAdvisor(vectorStore);
     }
 
     @GetMapping("/{user}/inquire")
     String inquire(@PathVariable("user") String user,
-                  @RequestParam String question) {
+                   @RequestParam String question) {
 
         var advisor = this.advisorMap.computeIfAbsent(user,
-                x -> PromptChatMemoryAdvisor
+                x -> MessageChatMemoryAdvisor
                         .builder(MessageWindowChatMemory.builder().build()).build());
 
-        return this.singularity
+        return this.ragChatClient
                 .prompt()
                 .user(question)
                 .advisors(advisor, this.questionAnswerAdvisor)
                 .call()
                 .content();
     }
-} 
+}

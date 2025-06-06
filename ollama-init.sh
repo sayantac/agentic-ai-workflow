@@ -7,7 +7,7 @@ ollama serve &
 sleep 10
 
 # Pull required models
-ollama pull nomic-embed-text:latest
+ollama pull mxbai-embed-large:335m
 ollama pull mistral:7b
 
 # Wait for all background processes
