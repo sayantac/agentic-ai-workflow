@@ -2,9 +2,7 @@ package demo.ai.agentic.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
-import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,13 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Profile("ollama")
 public class DocumentSearchController {
 
-    private final ChatClient ragChatClient;
+    private final ChatClient chatClient;
     private final Map<String, MessageChatMemoryAdvisor> advisorMap = new ConcurrentHashMap<>();
-    private final QuestionAnswerAdvisor questionAnswerAdvisor;
 
-    DocumentSearchController(ChatClient chatClient, VectorStore vectorStore) {
-        this.ragChatClient = chatClient;
-        this.questionAnswerAdvisor = new QuestionAnswerAdvisor(vectorStore);
+    DocumentSearchController(ChatClient chatClient) {
+        this.chatClient = chatClient;
     }
 
     @GetMapping("/{user}/inquire")
@@ -35,10 +31,10 @@ public class DocumentSearchController {
                 x -> MessageChatMemoryAdvisor
                         .builder(MessageWindowChatMemory.builder().build()).build());
 
-        return this.ragChatClient
+        return this.chatClient
                 .prompt()
                 .user(question)
-                .advisors(advisor, this.questionAnswerAdvisor)
+                .advisors(advisor)
                 .call()
                 .content();
     }

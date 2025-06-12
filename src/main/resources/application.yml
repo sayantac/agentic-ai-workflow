@@ -72,7 +72,7 @@ spring:
         pull-model-strategy: when_missing
       chat:
         options:
-          model: mistral
+          model: llama3.2
     vectorstore:
       pgvector:
         table-name: ollama_vector_store

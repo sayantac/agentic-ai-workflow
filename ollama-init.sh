@@ -8,7 +8,7 @@ sleep 10
 
 # Pull required models
 ollama pull mxbai-embed-large:335m
-ollama pull mistral:7b
+ollama pull llama3.2:3b
 
 # Wait for all background processes
 wait

@@ -5,9 +5,9 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.prompt.ChatOptions;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.reader.ExtractedTextFormatter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
@@ -35,11 +35,17 @@ public class OllamaConfig {
     }
 
     @Bean
-    ChatClient ragChatClient(ChatClient.Builder chatClientBuilder) {
+    ChatClient chatClient(ChatClient.Builder chatClientBuilder,
+                          VectorStore vectorStore) {
         return chatClientBuilder
-                .defaultOptions(ChatOptions.builder().temperature(0.7).build())
-                .defaultAdvisors(new SimpleLoggerAdvisor())
-                .defaultTools(new DateTimeTools())
+                .defaultOptions(ToolCallingChatOptions.builder()
+                        .temperature(0.7)
+                        .internalToolExecutionEnabled(Boolean.TRUE)
+                        .build())
+                .defaultAdvisors(
+                        //new SimpleLoggerAdvisor(),
+                        new QuestionAnswerAdvisor(vectorStore)) // Add RAG capability
+                .defaultTools(new DateTimeTools()) // Add tool calling capability
                 .build();
     }
 
