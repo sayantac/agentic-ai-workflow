@@ -1,10 +1,9 @@
 package demo.ai.agentic.controller;
 
+import demo.ai.agentic.tools.DateTimeTools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
-import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,18 +15,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @Profile("ollama")
-public class DocumentSearchController {
+public class DateTimeController {
 
     private final ChatClient chatClient;
     private final Map<String, MessageChatMemoryAdvisor> advisorMap = new ConcurrentHashMap<>();
-    private final QuestionAnswerAdvisor questionAnswerAdvisor;
 
-    DocumentSearchController(ChatClient chatClient, VectorStore vectorStore) {
+    DateTimeController(ChatClient chatClient) {
         this.chatClient = chatClient;
-        this.questionAnswerAdvisor = new QuestionAnswerAdvisor(vectorStore);
     }
 
-    @GetMapping("/{user}/doc/search")
+    @GetMapping("/{user}/clock")
     String inquire(@PathVariable("user") String user,
                    @RequestParam String question) {
 
@@ -38,7 +35,8 @@ public class DocumentSearchController {
         return this.chatClient
                 .prompt()
                 .user(question)
-                .advisors(advisor, this.questionAnswerAdvisor)
+                .advisors(advisor)
+                .tools(new DateTimeTools())
                 .call()
                 .content();
     }
