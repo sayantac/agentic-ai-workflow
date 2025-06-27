@@ -1,24 +1,7 @@
 services:
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    pull_policy: always
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-      - ./ollama-init.sh:/ollama-init.sh
-    healthcheck:
-      test: [ "CMD-SHELL", "bash -c '</dev/tcp/localhost/11434'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    entrypoint: [ "/bin/bash", "/ollama-init.sh" ]
-
   postgres:
     image: pgvector/pgvector:pg17
-    container_name: postgres
+    container_name: postgres_bedrock
     environment:
       POSTGRES_DB: adoptions
       POSTGRES_USER: postgres
@@ -27,7 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -45,14 +28,13 @@ services:
       timeout: 5s
       retries: 5
 
-  agentic-ai-workflow:
+  ai-agents-rag-mcp-bedrock:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
       args:
-        - SPRING_PROFILES_ACTIVE=ollama
-      no_cache: true
-    container_name: agentic-ai-workflow
+        MODULE: ai-agents-rag-mcp-bedrock
+    container_name: ai-agents-rag-mcp-bedrock
     ports:
       - "8080:8080"
     environment:
@@ -64,15 +46,11 @@ services:
       - AWS_SECRET_KEY=
       - AWS_SESSION_TOKEN=
       - VECTORSTORE_INITIALIZE=true
-      - SPRING_PROFILES_ACTIVE=ollama
     depends_on:
       postgres:
         condition: service_healthy
       mcp-server:
         condition: service_healthy
-      ollama:
-        condition: service_healthy
 
 volumes:
   postgres_data:
-  ollama_data:

@@ -6,13 +6,17 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.6</version>
-		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>demo.ai.agentic</groupId>
 	<artifactId>agentic-ai-workflow</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 	<name>agentic-ai-workflow</name>
-	<description>Agentic AI Workflow with Spring AI</description>
+	<description>Agentic AI Workflow</description>
+	<modules>
+		<module>ai-agents-rag-mcp-bedrock</module>
+		<module>ai-agents-rag-tools-ollama</module>
+	</modules>
 	<properties>
 		<java.version>21</java.version>
 		<spring-ai.version>1.0.0</spring-ai.version>
@@ -42,7 +46,7 @@
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-pdf-document-reader</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -59,25 +63,15 @@
 	<profiles>
 		<profile>
 			<id>bedrock</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.springframework.ai</groupId>
-					<artifactId>spring-ai-starter-model-bedrock</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>org.springframework.ai</groupId>
-					<artifactId>spring-ai-starter-model-bedrock-converse</artifactId>
-				</dependency>
-			</dependencies>
+			<modules>
+				<module>ai-agents-rag-mcp-bedrock</module>
+			</modules>
 		</profile>
 		<profile>
 			<id>ollama</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.springframework.ai</groupId>
-					<artifactId>spring-ai-starter-model-ollama</artifactId>
-				</dependency>
-			</dependencies>
+			<modules>
+				<module>ai-agents-rag-tools-ollama</module>
+			</modules>
 		</profile>
 	</profiles>
 

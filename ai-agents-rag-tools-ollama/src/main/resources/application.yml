@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: ai-agents-rag-tools-ollama
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  ai:
+    model:
+      embedding: ollama
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://ollama:11434}
+      init:
+        pull-model-strategy: when_missing
+      chat:
+        options:
+          model: llama3.2
+    vectorstore:
+      pgvector:
+        table-name: ollama_vector_store
+        remove-existing-vector-store-table: true
+        initialize-schema: true
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1024
+
+# Vector Store Initialization Control
+app:
+  vectorstore:
+    initialize: ${VECTORSTORE_INITIALIZE:false}
+
+# Logging
+logging:
+  level:
+    org:
+      springframework:
+        ai: DEBUG
+        jdbc: DEBUG
+    io:
+      modelcontextprotocol: TRACE

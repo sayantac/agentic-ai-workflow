@@ -14,7 +14,6 @@ import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 
@@ -23,7 +22,6 @@ import java.net.URI;
 import java.util.List;
 
 @Configuration
-@Profile("ollama")
 public class OllamaConfig {
 
     private static final Logger log = LoggerFactory.getLogger(OllamaConfig.class);

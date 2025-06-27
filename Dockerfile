@@ -1,30 +1,32 @@
+# Multi-module Dockerfile for Maven project
+
 # Build stage
 FROM maven:3.9-eclipse-temurin-21-jammy AS builder
 WORKDIR /build
-COPY . .
+ARG MODULE
 
-# Add build argument
-ARG SPRING_PROFILES_ACTIVE=ollama
-RUN mvn clean package -DskipTests -P${SPRING_PROFILES_ACTIVE}
+# Copy only the parent pom.xml and the specified module directory
+COPY pom.xml pom.xml
+COPY ${MODULE} ${MODULE}
+
+WORKDIR /build/${MODULE}
+RUN mvn clean package -DskipTests
 
 # Run stage
 FROM eclipse-temurin:21-jre-jammy
-
 WORKDIR /app
+ARG MODULE
 
-# Copy the built jar from builder stage
-COPY --from=builder /build/target/*.jar app.jar
+COPY --from=builder /build/${MODULE}/target/*.jar app.jar
 
 # Environment variables with defaults that can be overridden
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/adoptions
-ENV SPRING_DATASOURCE_USERNAME=postgres
-ENV SPRING_DATASOURCE_PASSWORD=postgres
-ENV SERVER_PORT=8080
-ENV AWS_REGION=us-east-1
-ENV AWS_ACCESS_KEY=
-ENV AWS_SECRET_KEY=
-ENV AWS_SESSION_TOKEN=
-ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+ENV SPRING_DATASOURCE_URL=""
+ENV SPRING_DATASOURCE_USERNAME=""
+ENV SPRING_DATASOURCE_PASSWORD=""
+ENV AWS_REGION=""
+ENV AWS_ACCESS_KEY=""
+ENV AWS_SECRET_KEY=""
+ENV AWS_SESSION_TOKEN=""
 
 # Expose the application port
 EXPOSE 8080

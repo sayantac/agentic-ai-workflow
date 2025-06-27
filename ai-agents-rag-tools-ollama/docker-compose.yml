@@ -1,0 +1,58 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    pull_policy: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./ollama-init.sh:/ollama-init.sh
+    healthcheck:
+      test: [ "CMD-SHELL", "bash -c '</dev/tcp/localhost/11434'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    entrypoint: [ "/bin/bash", "/ollama-init.sh" ]
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: postgres_ollama
+    environment:
+      POSTGRES_DB: adoptions
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ai-agents-rag-tools-ollama:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        MODULE: ai-agents-rag-tools-ollama
+    container_name: ai-agents-rag-tools-ollama
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/adoptions
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - VECTORSTORE_INITIALIZE=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  ollama_data:
