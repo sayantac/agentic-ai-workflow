@@ -1,0 +1,27 @@
+services:
+  mcp-server:
+    image: mcp-server:latest
+    container_name: weather-mcp-server
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8081/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ai-agents-google-adk:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        MODULE: ai-agents-google-adk
+    container_name: ai-agents-google-adk
+    ports:
+      - "8080:8080"
+    environment:
+      - GOOGLE_GENAI_USE_VERTEXAI=FALSE
+      - GOOGLE_API_KEY=AIzaSyAvsPy0bkVfu8AS75xw6BTl85jgPJz9hrw
+    depends_on:
+      mcp-server:
+        condition: service_healthy

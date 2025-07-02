@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: ai-agents-google-adk
+
+mcp:
+  server:
+    url: http://weather-mcp-server:8081/sse

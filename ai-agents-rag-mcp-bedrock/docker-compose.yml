@@ -19,7 +19,7 @@ services:
 
   mcp-server:
     image: mcp-server:latest
-    container_name: mcp-server
+    container_name: scheduler-mcp-server
     ports:
       - "8081:8081"
     healthcheck:

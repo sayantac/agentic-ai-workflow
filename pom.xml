@@ -16,7 +16,8 @@
 	<modules>
 		<module>ai-agents-rag-mcp-bedrock</module>
 		<module>ai-agents-rag-tools-ollama</module>
-	</modules>
+        <module>ai-agents-google-adk</module>
+    </modules>
 	<properties>
 		<java.version>21</java.version>
 		<spring-ai.version>1.0.0</spring-ai.version>
@@ -24,23 +25,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-starter-mcp-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-advisors-vector-store</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
@@ -71,6 +60,12 @@
 			<id>ollama</id>
 			<modules>
 				<module>ai-agents-rag-tools-ollama</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>adk</id>
+			<modules>
+				<module>ai-agents-google-adk</module>
 			</modules>
 		</profile>
 	</profiles>
