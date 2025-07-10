@@ -19,17 +19,6 @@ ARG MODULE
 
 COPY --from=builder /build/${MODULE}/target/*.jar app.jar
 
-# Environment variables with defaults that can be overridden
-ENV SPRING_DATASOURCE_URL=""
-ENV SPRING_DATASOURCE_USERNAME=""
-ENV SPRING_DATASOURCE_PASSWORD=""
-ENV AWS_REGION=""
-ENV AWS_ACCESS_KEY=""
-ENV AWS_SECRET_KEY=""
-ENV AWS_SESSION_TOKEN=""
-ENV GOOGLE_GENAI_USE_VERTEXAI=""
-ENV GOOGLE_API_KEY=""
-
 # Expose the application port
 EXPOSE 8080
 

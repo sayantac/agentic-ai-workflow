@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.6</version>
+		<version>3.4.7</version>
 	</parent>
 	<groupId>demo.ai.agentic</groupId>
 	<artifactId>agentic-ai-workflow</artifactId>
@@ -14,8 +14,8 @@
 	<name>agentic-ai-workflow</name>
 	<description>Agentic AI Workflow</description>
 	<modules>
-		<module>ai-agents-rag-mcp-bedrock</module>
-		<module>ai-agents-rag-tools-ollama</module>
+		<module>ai-agents-bedrock</module>
+		<module>ai-agents-ollama</module>
         <module>ai-agents-google-adk</module>
     </modules>
 	<properties>
@@ -33,7 +33,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
-			<artifactId>spring-ai-pdf-document-reader</artifactId>
+			<artifactId>spring-ai-advisors-vector-store</artifactId>
 		</dependency>
 
 		<dependency>
@@ -53,13 +53,13 @@
 		<profile>
 			<id>bedrock</id>
 			<modules>
-				<module>ai-agents-rag-mcp-bedrock</module>
+				<module>ai-agents-bedrock</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>ollama</id>
 			<modules>
-				<module>ai-agents-rag-tools-ollama</module>
+				<module>ai-agents-ollama</module>
 			</modules>
 		</profile>
 		<profile>

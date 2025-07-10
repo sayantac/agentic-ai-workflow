@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: ai-agents-rag-tools-ollama
+  ai:
+    model:
+      embedding: ollama
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://ollama:11434}
+      init:
+        pull-model-strategy: when_missing
+      chat:
+        options:
+          model: llama3.2
+    vectorstore:
+      chroma:
+        client:
+          host: ${CHROMA_HOST:http://chromadb}
+          port: ${CHROMA_PORT:8000}
+        initialize-schema: true
+        collection-name: WineReviews
+
+# Vector Store Initialization Control
+app:
+  vectorstore:
+    initialize: ${VECTORSTORE_INITIALIZE:false}
+
+# Logging
+logging:
+  level:
+    org:
+      springframework:
+        ai: TRACE
