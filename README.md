@@ -120,10 +120,11 @@ A wine recommendation and information assistant powered by Ollama LLM and Chroma
 - Wine data loaded from CSV
 - REST API for wine queries and date/time tools
 - **Agent Builder Demonstration:** Showcases key features such as:
-  - **Tools:** Custom tools for enhanced agent capabilities
   - **Chat:** Conversational interface
-  - **RAG (Retrieval-Augmented Generation):** Combines LLM with vector search for context-aware answers
   - **Vector Search:** Semantic search over wine data
+  - **Tools:** Custom tools for enhanced agent capabilities
+  - **Structured Output:** LLM response with structured output
+  - **RAG (Retrieval-Augmented Generation):** Combines LLM with vector search for context-aware answers
   - **Guardrails:** Implements safety and control mechanisms for agent responses
 
 **API Documentation:**
@@ -146,30 +147,19 @@ Each module expects a `.env` file in its root directory. This file is used by Do
 
 **Example `.env` for ai-agents-bedrock:**
 ```
-AWS_REGION=us-east-1
 AWS_ACCESS_KEY=your-access-key
 AWS_SECRET_KEY=your-secret-key
 AWS_SESSION_TOKEN=your-session-token
-SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/adoptions
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
-VECTORSTORE_INITIALIZE=true
 ```
 
 **Example `.env` for ai-agents-google-adk:**
 ```
 GOOGLE_API_KEY=your-google-api-key
-SPRING_DATASOURCE_URL=...
-SPRING_DATASOURCE_USERNAME=...
-SPRING_DATASOURCE_PASSWORD=...
 ```
 
-**Example `.env` for ai-agents-ollama:**
+**Example `.env` for agent-workflow-architecture:**
 ```
-OLLAMA_API_URL=http://ollama:11434
-SPRING_DATASOURCE_URL=...
-SPRING_DATASOURCE_USERNAME=...
-SPRING_DATASOURCE_PASSWORD=...
+OPENAI_API_KEY=your-openai-api-key
 ```
 
 **How to create:**
