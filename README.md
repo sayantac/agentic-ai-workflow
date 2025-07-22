@@ -1,197 +1,195 @@
-# Agentic AI Workflow
+# Agentic AI Workflow – Monorepo Guide
 
-A Spring Boot application that demonstrates an AI-powered dog adoption assistant using Spring AI and vector store capabilities. The application helps users find and adopt dogs from Pooch Palace, with locations across multiple cities worldwide.
+This repository contains multiple independent AI-powered Spring Boot applications, each demonstrating a unique agentic workflow or integration. Each module is self-contained and can be run individually using Docker Compose. This guide provides a detailed overview of each module, their functionality, environment configuration, and API documentation.
 
-## Features
+---
 
-- AI-powered conversational interface for dog adoption assistance
-- Vector store integration for efficient dog information retrieval
-- PostgreSQL with pgvector extension for vector similarity search
-- Docker containerization for easy deployment
-- Spring AI integration with Model Context Protocol (MCP) client
-- AWS Bedrock integration for AI capabilities
+## Table of Contents
 
-## Tech Stack
+1. [Repository Structure](#repository-structure)
+2. [Common Setup Requirements](#common-setup-requirements)
+3. [Module Overviews & API Docs](#module-overviews--api-docs)
+    - [agent-workflow-architecture](#agent-workflow-architecture)
+    - [ai-agents-bedrock](#ai-agents-bedrock)
+    - [ai-agents-google-adk](#ai-agents-google-adk)
+    - [ai-agents-ollama](#ai-agents-ollama)
+4. [Environment Variables (.env)](#environment-variables-env)
+5. [Troubleshooting](#troubleshooting)
+6. [Contributing](#contributing)
+7. [License](#license)
 
-- Java 21
-- Spring Boot 3.4.5
-- Spring AI 1.0.0-M8
-- PostgreSQL with pgvector extension
-- Docker & Docker Compose
-- Maven for build management
-- AWS Bedrock for AI services
+---
 
-## Prerequisites
-
-Before running the application, ensure you have the following installed:
-
-- Docker Desktop (latest version)
-- Docker Compose (included with Docker Desktop)
-- Git (for cloning the repository)
-- AWS credentials with Bedrock access
-
-## Running the Application
-
-### Using Docker Compose (Recommended)
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd agentic-ai-workflow
-   ```
-
-2. Configure AWS credentials:
-   The application requires AWS credentials for Bedrock services. These are configured in the `docker-compose.yml` file:
-   ```yaml
-   environment:
-     - AWS_REGION=us-east-1
-     - AWS_ACCESS_KEY=your-access-key
-     - AWS_SECRET_KEY=your-secret-key
-     - AWS_SESSION_TOKEN=your-session-token
-   ```
-
-3. Build and start the application:
-   ```bash
-   docker compose up --build
-   ```
-   This command will:
-   - Build the Spring Boot application with no cache
-   - Start PostgreSQL with pgvector extension
-   - Initialize the vector store with dog data
-   - Start the MCP server
-   - Start the application server
-
-4. The application will be available at:
-   - Application: http://localhost:8080
-   - PostgreSQL: localhost:5432
-   - MCP Server: http://localhost:8081
-
-5. To stop the application:
-   ```bash
-   docker compose down
-   ```
-
-6. To remove all data and start fresh:
-   ```bash
-   docker compose down -v
-   ```
-
-### Important Note on Docker Compose and Profile Switching
-
-When switching profiles (e.g., from `bedrock` to `ollama`) or making code changes, Docker Compose does not automatically rebuild the project. You must explicitly rebuild the image to ensure the correct version is used. For example:
-
-```sh
-docker compose up --build
-```
-
-If you want a clean build (removing old containers and images), run:
-
-```sh
-docker compose down -v
-docker compose up --build
-```
-
-This ensures that the Maven build runs with the correct profile and the resulting JAR is up to date.
-
-### Service Details
-
-The application consists of three main services:
-
-1. **PostgreSQL (postgres)**
-   - Uses pgvector extension for vector storage
-   - Port: 5432
-   - Database: adoptions
-   - Credentials: postgres/postgres
-
-2. **MCP Server (mcp-server)**
-   - Handles AI model interactions
-   - Port: 8081
-   - Health check endpoint: /actuator/health
-
-3. **Agentic AI Workflow (agentic-ai-workflow)**
-   - Main application service
-   - Port: 8080
-   - Depends on postgres and mcp-server
-   - Initializes vector store with dog data
-
-### Configuration
-
-The application can be configured using environment variables in docker-compose.yml:
-
-- `SPRING_DATASOURCE_URL`: Database connection URL
-- `SPRING_DATASOURCE_USERNAME`: Database username
-- `SPRING_DATASOURCE_PASSWORD`: Database password
-- `VECTORSTORE_INITIALIZE`: Whether to initialize vector store on startup
-- `AWS_REGION`: AWS region for Bedrock services
-- `AWS_ACCESS_KEY`: AWS access key
-- `AWS_SECRET_KEY`: AWS secret key
-- `AWS_SESSION_TOKEN`: AWS session token
-
-### Vector Store Initialization
-
-The vector store is initialized with dog data from the database. This process:
-1. Creates necessary tables and indexes
-2. Loads initial dog data from schema.sql
-3. Converts dog information into vector embeddings
-4. Stores vectors for similarity search
-
-### Testing the Application
-
-Once the application is running, you can test it by:
-
-1. Making a GET request to the inquiry endpoint:
-   ```
-   GET http://localhost:8080/{user}/inquire?question=your_question
-   ```
-   Replace `{user}` with any user identifier and `your_question` with your query about dogs.
-
-2. Example questions:
-   - "What dogs are good with children?"
-   - "Do you have any small dogs available?"
-   - "Tell me about dogs that are good for apartments"
-
-## Project Structure
+## Repository Structure
 
 ```
-.
-├── src/
-│   ├── main/
-│   │   ├── java/demo/ai/agentic/
-│   │   │   ├── config/          # Configuration classes
-│   │   │   ├── controller/      # REST controllers
-│   │   │   ├── repository/      # Data repositories
-│   │   │   └── record/          # Data models
-│   │   └── resources/           # Application properties
-├── postgres/
-│   └── schema.sql              # Database schema and initial data
-├── Dockerfile                  # Docker build file
-├── docker-compose.yml         # Docker compose configuration
-└── pom.xml                    # Maven dependencies
+agentic-ai-workflow/
+│
+├── agent-workflow-architecture/   # Agentic workflow design patterns
+├── ai-agents-bedrock/             # AWS Bedrock-powered dog adoption assistant
+├── ai-agents-google-adk/          # Google ADK-powered travel assistant
+├── ai-agents-ollama/              # Ollama LLM-powered wine assistant
+├── Dockerfile
+├── README.md
+└── ...
 ```
+
+---
+
+## Common Setup Requirements
+
+- **Docker Desktop** (latest)
+- **Docker Compose**
+- **Java 21** (for local builds)
+- **Maven** (for local builds)
+- **Git**
+- **.env file**: Each module requires a `.env` file in its root directory for environment-specific configuration.
+
+---
+
+## Module Overviews & API Docs
+
+### 1. agent-workflow-architecture
+
+**Purpose:**  
+Demonstrates various agentic workflow patterns (chain, routing, parallelization, orchestration, evaluation/optimization) using Spring Boot. This is a reference implementation for building complex AI agent workflows.
+
+**Key Features:**
+- Multiple workflow patterns implemented as Java classes
+- REST API for workflow orchestration
+- Configurable via environment variables
+
+**API Documentation:**
+
+| Endpoint                                 | Method | Description                                                                                  |
+|-------------------------------------------|--------|----------------------------------------------------------------------------------------------|
+| `/workflow/chain`                        | GET    | Runs the chain workflow on a sample report and returns the result.                           |
+| `/workflow/route/{incidentId}`           | GET    | Runs the routing workflow for a given incident ID.                                           |
+| `/workflow/parallel`                     | GET    | Runs the parallelization workflow for multiple stakeholder groups and returns the results.    |
+| `/workflow/orchestrate`                  | GET    | Runs the orchestrator workflow to generate a product description.                            |
+| `/workflow/evaluate/optimize`            | GET    | Runs the evaluator/optimizer workflow on a sample coding task and returns the refined result.|
+
+---
+
+### 2. ai-agents-bedrock
+
+**Purpose:**  
+An AI-powered dog adoption assistant leveraging AWS Bedrock for LLM and PGVector for vector search. Helps users find adoptable dogs using natural language queries.
+
+**Key Features:**
+- Conversational AI for dog adoption
+- Vector store (PostgreSQL + pgvector) for semantic search
+- Integration with AWS Bedrock for embeddings and LLM
+- REST API for user queries
+- **Appointment Scheduling:** Demonstrates scheduling appointments for dog adoption through integration with an MCP server, enabling end-to-end adoption workflows.
+
+**API Documentation:**
+
+| Endpoint                                 | Method | Description                                                                                  |
+|-------------------------------------------|--------|----------------------------------------------------------------------------------------------|
+| `/{user}/adoption/enquiry?question=...`  | GET    | Asks a question about dog adoption for a specific user. Uses LLM and vector search.          |
+
+---
+
+### 3. ai-agents-google-adk
+
+**Purpose:**  
+A travel assistant agent using Google ADK (Agent Development Kit). Provides travel recommendations and planning via conversational interface.
+
+**Key Features:**
+- Google ADK integration for LLM
+- REST API for travel queries
+- Modular agent configuration
+- **Weather and Search Integration:** Integrates a weather MCP server and a Google Search agent to help plan a day in a city, combining real-time weather data and search results for comprehensive travel planning.
+
+**API Documentation:**
+
+| Endpoint                                 | Method | Description                                                                                  |
+|-------------------------------------------|--------|----------------------------------------------------------------------------------------------|
+| `/{user}/travel/plan?question=...`       | GET    | Asks a travel planning question for a specific user. Integrates weather and search agents.   |
+
+---
+
+### 4. ai-agents-ollama
+
+**Purpose:**  
+A wine recommendation and information assistant powered by Ollama LLM and ChromaDB for vector search. Demonstrates advanced agent builder features for domain-specific queries.
+
+**Key Features:**
+- Ollama LLM integration
+- Wine data loaded from CSV
+- REST API for wine queries and date/time tools
+- **Agent Builder Demonstration:** Showcases key features such as:
+  - **Tools:** Custom tools for enhanced agent capabilities
+  - **Chat:** Conversational interface
+  - **RAG (Retrieval-Augmented Generation):** Combines LLM with vector search for context-aware answers
+  - **Vector Search:** Semantic search over wine data
+  - **Guardrails:** Implements safety and control mechanisms for agent responses
+
+**API Documentation:**
+
+| Endpoint                                 | Method | Description                                                                                  |
+|-------------------------------------------|--------|----------------------------------------------------------------------------------------------|
+| `/{user}/ai/chat?message=...`            | GET    | Conversational chat with the LLM for a specific user.                                        |
+| `/ai/chroma?message=...`                 | GET    | Vector search for wines based on a query.                                                    |
+| `/ai/chroma/meta?search_query=...&meta_query=...` | GET | Vector search for wines with metadata filtering.                                             |
+| `/{user}/ai/tool/call?message=...`       | GET    | Calls a custom wine tool for recommendations.                                                |
+| `/{user}/ai/structure?message=...`       | GET    | Returns structured wine details for a query.                                                 |
+| `/{user}/ai/rag?message=...`             | GET    | Retrieval-Augmented Generation: combines LLM and vector search for answers.                  |
+| `/{user}/ai/guardrail?message=...`       | GET    | Chat with guardrails (safety filters) enabled.                                               |
+
+---
+
+## Environment Variables (.env)
+
+Each module expects a `.env` file in its root directory. This file is used by Docker Compose to inject environment variables into the containers.
+
+**Example `.env` for ai-agents-bedrock:**
+```
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY=your-access-key
+AWS_SECRET_KEY=your-secret-key
+AWS_SESSION_TOKEN=your-session-token
+SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/adoptions
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=postgres
+VECTORSTORE_INITIALIZE=true
+```
+
+**Example `.env` for ai-agents-google-adk:**
+```
+GOOGLE_API_KEY=your-google-api-key
+SPRING_DATASOURCE_URL=...
+SPRING_DATASOURCE_USERNAME=...
+SPRING_DATASOURCE_PASSWORD=...
+```
+
+**Example `.env` for ai-agents-ollama:**
+```
+OLLAMA_API_URL=http://ollama:11434
+SPRING_DATASOURCE_URL=...
+SPRING_DATASOURCE_USERNAME=...
+SPRING_DATASOURCE_PASSWORD=...
+```
+
+**How to create:**
+1. Copy the example above to a file named `.env` in the module directory.
+2. Fill in your credentials and configuration.
+
+---
 
 ## Troubleshooting
 
-1. **Vector Store Initialization Issues**
-   - Check if `VECTORSTORE_INITIALIZE` is set to true
-   - Verify database connection
-   - Check application logs for initialization errors
+- **Build Issues:**  
+  Use `docker compose down -v` to remove old containers/volumes, then rebuild.
 
-2. **AWS Bedrock Connection Issues**
-   - Verify AWS credentials
-   - Check AWS region configuration
-   - Ensure Bedrock service is available in your region
-   - When using Bedrock profile, ensure the embedding model is properly configured
-   - If you see "EmbeddingModel bean not found" error, check that BedrockConfig is properly set up
+- **Environment Variables Not Loaded:**  
+  Ensure `.env` exists and is in the correct directory.
 
-3. **Database Connection Issues**
-   - Verify PostgreSQL is running
-   - Check database credentials
-   - Ensure schema.sql is properly loaded
+- **Database Connection Errors:**  
+  Check DB credentials and that the DB service is running.
 
-## Contributing
+- **AWS/Google/Ollama API Errors:**  
+  Verify your API keys and network access.
 
-Feel free to submit issues and enhancement requests.
-
-## License
-
-[Add your license information here] 
+---
