@@ -42,9 +42,9 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY=
-      - AWS_SECRET_KEY=
-      - AWS_SESSION_TOKEN=
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
       - VECTORSTORE_INITIALIZE=true
     depends_on:
       postgres:
