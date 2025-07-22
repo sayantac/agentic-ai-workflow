@@ -24,15 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class OllamaConfig {
+public class ChatClientConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(OllamaConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(ChatClientConfig.class);
     private final VectorStore vectorStore;
 
     @Value("${app.vectorstore.initialize}")
     private boolean vectorStoreInitialize;
 
-    public OllamaConfig(VectorStore vectorStore) {
+    public ChatClientConfig(VectorStore vectorStore) {
         this.vectorStore = vectorStore;
     }
 

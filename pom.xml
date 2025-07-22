@@ -17,6 +17,7 @@
 		<module>ai-agents-bedrock</module>
 		<module>ai-agents-ollama</module>
         <module>ai-agents-google-adk</module>
+        <module>agent-workflow-architecture</module>
     </modules>
 	<properties>
 		<java.version>21</java.version>
@@ -48,27 +49,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<profiles>
-		<profile>
-			<id>bedrock</id>
-			<modules>
-				<module>ai-agents-bedrock</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>ollama</id>
-			<modules>
-				<module>ai-agents-ollama</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>adk</id>
-			<modules>
-				<module>ai-agents-google-adk</module>
-			</modules>
-		</profile>
-	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
