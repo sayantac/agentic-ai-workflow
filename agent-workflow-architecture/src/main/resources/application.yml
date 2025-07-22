@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: agent-workflow-architecture
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-3.5-turbo
+# Logging
+logging:
+  level:
+    org:
+      springframework:
+        ai: TRACE

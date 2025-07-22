@@ -16,16 +16,16 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Configuration
-public class BedrockConfig {
+public class ChatClientConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(BedrockConfig.class);
+    private static final Logger log = LoggerFactory.getLogger(ChatClientConfig.class);
     private final DogRepository dogRepository;
     private final VectorStore vectorStore;
 
     @Value("${app.vectorstore.initialize}")
     private boolean vectorStoreInitialize;
 
-    public BedrockConfig(DogRepository dogRepository, VectorStore vectorStore) {
+    public ChatClientConfig(DogRepository dogRepository, VectorStore vectorStore) {
         this.dogRepository = dogRepository;
         this.vectorStore = vectorStore;
     }

@@ -1,0 +1,13 @@
+services:
+  agent-workflow-architecture:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        MODULE: agent-workflow-architecture
+    container_name: agent-workflow-architecture
+    ports:
+      - "8080:8080"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    entrypoint: ["/bin/bash", "-c", "java -jar app.jar"]
