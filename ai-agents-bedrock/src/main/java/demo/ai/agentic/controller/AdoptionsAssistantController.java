@@ -1,5 +1,10 @@
 package demo.ai.agentic.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
@@ -14,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
+@Tag(name = "Adoption", description = "Dog adoption assistant endpoints powered by Bedrock")
 public class AdoptionsAssistantController {
 
     private final ChatClient singularity;
@@ -26,8 +32,15 @@ public class AdoptionsAssistantController {
     }
 
     @GetMapping("/{user}/adoption/enquiry")
-    String inquire(@PathVariable("user") String user,
-                  @RequestParam String question) {
+    @Operation(summary = "Ask adoption assistant", description = "Conversational query endpoint with memory and RAG over adoption knowledge base.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Response generated successfully")
+    })
+    String inquire(
+            @Parameter(description = "Username or session identifier")
+            @PathVariable("user") String user,
+            @Parameter(description = "User question")
+            @RequestParam String question) {
 
         var advisor = this.advisorMap.computeIfAbsent(user,
                 x -> PromptChatMemoryAdvisor

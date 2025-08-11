@@ -13,10 +13,8 @@ This repository contains multiple independent AI-powered Spring Boot application
     - [ai-agents-bedrock](#ai-agents-bedrock)
     - [ai-agents-google-adk](#ai-agents-google-adk)
     - [ai-agents-ollama](#ai-agents-ollama)
-4. [Environment Variables (.env)](#environment-variables-env)
+4. [Module Execution Guidelines](#module-execution-guidelines)
 5. [Troubleshooting](#troubleshooting)
-6. [Contributing](#contributing)
-7. [License](#license)
 
 ---
 
@@ -118,7 +116,7 @@ A wine recommendation and information assistant powered by Ollama LLM and Chroma
 **Key Features:**
 - Ollama LLM integration
 - Wine data loaded from CSV
-- REST API for wine queries and date/time tools
+- REST API for wine queries
 - **Agent Builder Demonstration:** Showcases key features such as:
   - **Chat:** Conversational interface
   - **Vector Search:** Semantic search over wine data
@@ -141,30 +139,101 @@ A wine recommendation and information assistant powered by Ollama LLM and Chroma
 
 ---
 
-## Environment Variables (.env)
+## Module Execution Guidelines
+
+### How to run each module
+
+Run from the respective module directory:
+
+```bash
+cd ai-agents-bedrock && docker compose up --build
+```
+
+```bash
+cd ai-agents-ollama && docker compose up --build
+```
+
+Note for first-time startup in `ai-agents-ollama`:
+- The `ollama` container downloads and warms up required models on first run via `scripts/ollama-init.sh`. If all services start at once, the app may fail because Ollama hasn't finished startup.
+- Recommended sequence for the very first run (or after purging volumes):
+  1. Temporarily comment out the `chromadb` and `ai-agents-ollama` services in `ai-agents-ollama/docker-compose.yml`, leaving only the `ollama` service.
+  2. Start only Ollama: `docker compose up --build` and wait until the logs show models are pulled and the server is ready.
+  3. Stop the compose (`Ctrl+C`), restore the commented services, and then start all services: `docker compose up --build`.
+  4. Keep `VECTORSTORE_INITIALIZE` aligned with the guidance below to control ingestion.
+
+```bash
+cd ai-agents-google-adk && docker compose up --build
+```
+
+```bash
+cd agent-workflow-architecture && docker compose up --build
+```
+
+### .env prerequisites
 
 Each module expects a `.env` file in its root directory. This file is used by Docker Compose to inject environment variables into the containers.
 
-**Example `.env` for ai-agents-bedrock:**
-```
+- Create a `.env` file per module directory.
+- Populate it with the required credentials and configuration for that module.
+
+Examples:
+
+```env
+# ai-agents-bedrock/.env
 AWS_ACCESS_KEY=your-access-key
 AWS_SECRET_KEY=your-secret-key
 AWS_SESSION_TOKEN=your-session-token
 ```
 
-**Example `.env` for ai-agents-google-adk:**
-```
+```env
+# ai-agents-google-adk/.env
 GOOGLE_API_KEY=your-google-api-key
 ```
 
-**Example `.env` for agent-workflow-architecture:**
-```
+```env
+# agent-workflow-architecture/.env
 OPENAI_API_KEY=your-openai-api-key
 ```
 
-**How to create:**
-1. Copy the example above to a file named `.env` in the module directory.
-2. Fill in your credentials and configuration.
+### ai-agents-ollama and ai-agents-bedrock: one-time vector store initialization
+
+Both `ai-agents-ollama` (ChromaDB) and `ai-agents-bedrock` (PostgreSQL + pgvector) require a one-time ingestion/initialization of their vector stores. This is controlled by the `VECTORSTORE_INITIALIZE` environment variable, which maps to `app.vectorstore.initialize` in Spring configuration.
+
+- **First run:** Set `VECTORSTORE_INITIALIZE=true` to load data into the vector store.
+- **Subsequent runs:** Set `VECTORSTORE_INITIALIZE=false` to prevent re-ingestion on every startup.
+- **After purging volumes:** If you remove Docker volumes and restart, set `VECTORSTORE_INITIALIZE=true` again to reinitialize.
+
+Where to set it:
+- `ai-agents-bedrock/docker-compose.yml` currently sets `VECTORSTORE_INITIALIZE=true` by default for the first run. Change it to `false` after initialization completes.
+- `ai-agents-ollama/docker-compose.yml` sets `VECTORSTORE_INITIALIZE=false` by default. Change it to `true` only for the first run (or after purging volumes), then revert to `false`.
+
+Example snippets:
+
+```yaml
+# ai-agents-bedrock/docker-compose.yml
+  ai-agents-bedrock:
+    environment:
+      - VECTORSTORE_INITIALIZE=true   # First run only; set to false afterwards
+```
+
+```yaml
+# ai-agents-ollama/docker-compose.yml
+  ai-agents-ollama:
+    environment:
+      - VECTORSTORE_INITIALIZE=true   # First run only; set to false afterwards
+```
+
+Notes:
+- Schema initialization is managed separately via `initialize-schema: true` in each module's `application.yml`. The `VECTORSTORE_INITIALIZE` flag specifically controls data ingestion/population.
+- For a full reset, purge volumes and re-run with initialization enabled:
+  - Bedrock: run inside `ai-agents-bedrock/`: `docker compose down -v`
+  - Ollama/Chroma: run inside `ai-agents-ollama/`: `docker compose down -v`
+
+### Swagger / OpenAPI
+
+Once a module is running on port 8080, API docs are available at:
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
 ---
 

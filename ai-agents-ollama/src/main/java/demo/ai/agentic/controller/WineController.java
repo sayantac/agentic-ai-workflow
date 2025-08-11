@@ -2,6 +2,13 @@ package demo.ai.agentic.controller;
 
 import demo.ai.agentic.record.WineDetails;
 import demo.ai.agentic.tools.WineTool;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SafeGuardAdvisor;
@@ -20,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
+@Tag(name = "Wine", description = "Wine assistant endpoints powered by Ollama")
 public class WineController {
 
     private final ChatClient chatClient;
@@ -32,9 +40,15 @@ public class WineController {
     }
 
     @GetMapping("/{user}/ai/chat")
-    String inquire(@PathVariable("user") String user,
-                   @RequestParam(value = "message",
-                   defaultValue = "Hello LLM") String userInput) {
+    @Operation(summary = "Chat with wine assistant", description = "Conversational chat with memory for a given user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Response generated successfully")
+    })
+    String inquire(
+            @Parameter(description = "Username or session identifier")
+            @PathVariable("user") String user,
+            @Parameter(description = "User message to the assistant")
+            @RequestParam(value = "message", defaultValue = "Hello LLM") String userInput) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -51,8 +65,14 @@ public class WineController {
     }
 
     @GetMapping("/ai/chroma")
-    public List<Document> query(@RequestParam(value = "message",
-            defaultValue = "tasty wine") String message) {
+    @Operation(summary = "Query vector store", description = "Semantic search over wine documents.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search completed",
+                    content = @Content(schema = @Schema(implementation = Document.class)))
+    })
+    public List<Document> query(
+            @Parameter(description = "Query text for similarity search")
+            @RequestParam(value = "message", defaultValue = "tasty wine") String message) {
         return this.vectorStore
                 .similaritySearch(
                         SearchRequest.builder()
@@ -63,8 +83,15 @@ public class WineController {
     }
 
     @GetMapping("/ai/chroma/meta")
+    @Operation(summary = "Query vector store with metadata filter", description = "Semantic search over wine documents with metadata filtering.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search completed",
+                    content = @Content(schema = @Schema(implementation = Document.class)))
+    })
     public List<Document> queryWithMeta(
+            @Parameter(description = "Query text for similarity search")
             @RequestParam(value = "search_query", defaultValue = "tasty wine") String message,
+            @Parameter(description = "Metadata filter value for title field")
             @RequestParam(value = "meta_query", defaultValue = "Grizzly Peak") String meta_query
     ) {
         return vectorStore.similaritySearch(
@@ -77,9 +104,15 @@ public class WineController {
     }
 
     @GetMapping("/{user}/ai/tool/call")
-    String generation(@PathVariable("user") String user,
-                      @RequestParam(value = "message",
-                              defaultValue = "What wine do you suggest me?") String userInput) {
+    @Operation(summary = "Call wine recommendation tool", description = "Invokes a custom tool backed by the vector store to recommend wines.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tool executed successfully")
+    })
+    String generation(
+            @Parameter(description = "Username or session identifier")
+            @PathVariable("user") String user,
+            @Parameter(description = "User message for the tool")
+            @RequestParam(value = "message", defaultValue = "What wine do you suggest me?") String userInput) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -97,9 +130,16 @@ public class WineController {
     }
 
     @GetMapping("/{user}/ai/structure")
-    WineDetails structure(@PathVariable("user") String user,
-                      @RequestParam(value = "message",
-                              defaultValue = "What wine do you suggest me?") String userInput) {
+    @Operation(summary = "Structured output", description = "Returns structured wine details for a given user query.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Structured entity returned",
+                    content = @Content(schema = @Schema(implementation = WineDetails.class)))
+    })
+    WineDetails structure(
+            @Parameter(description = "Username or session identifier")
+            @PathVariable("user") String user,
+            @Parameter(description = "User message for structured output")
+            @RequestParam(value = "message", defaultValue = "What wine do you suggest me?") String userInput) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -117,9 +157,15 @@ public class WineController {
     }
 
     @GetMapping("/{user}/ai/rag")
-    String rag(@PathVariable("user") String user,
-                      @RequestParam(value = "message",
-                              defaultValue = "What is wine?") String userInput) {
+    @Operation(summary = "RAG-based chat", description = "Combines chat with semantic retrieval over wine documents.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Response generated successfully")
+    })
+    String rag(
+            @Parameter(description = "Username or session identifier")
+            @PathVariable("user") String user,
+            @Parameter(description = "User message to the assistant")
+            @RequestParam(value = "message", defaultValue = "What is wine?") String userInput) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -139,9 +185,15 @@ public class WineController {
     }
 
     @GetMapping("/{user}/ai/guardrail")
-    String guardrail(@PathVariable("user") String user,
-               @RequestParam(value = "message",
-                       defaultValue = "What is wine?") String userInput) {
+    @Operation(summary = "Guardrailed chat", description = "Chat endpoint with safety filters applied.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Response generated successfully")
+    })
+    String guardrail(
+            @Parameter(description = "Username or session identifier")
+            @PathVariable("user") String user,
+            @Parameter(description = "User message to the assistant")
+            @RequestParam(value = "message", defaultValue = "What is wine?") String userInput) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
