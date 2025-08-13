@@ -6,6 +6,7 @@ import demo.ai.agentic.record.RefinedResponse;
 import demo.ai.agentic.workflow.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@Tag(name = "Workflow", description = "Agentic workflow example endpoints")
+@Tag(name = "Workflow", description = "Agentic workflow design endpoints")
 public class WorkflowController {
 
     private final ChatClient chatClient;
@@ -54,7 +55,12 @@ public class WorkflowController {
             @ApiResponse(responseCode = "200", description = "Routing completed")
     })
     String routingWorkflow(
-            @Parameter(description = "Incident ID to route")
+            @Parameter(description = "Incident ID to route",
+                    schema = @Schema(allowableValues = {
+                            "INC001",
+                            "INC002",
+                            "INC003"
+                    }))
             @PathVariable("incidentId") String incidentId) {
 
         var routerWorkflow = new RoutingWorkflow(this.chatClient);

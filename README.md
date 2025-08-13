@@ -67,6 +67,32 @@ Demonstrates various agentic workflow patterns (chain, routing, parallelization,
 | `/workflow/orchestrate`                  | GET    | Runs the orchestrator workflow to generate a product description.                            |
 | `/workflow/evaluate/optimize`            | GET    | Runs the evaluator/optimizer workflow on a sample coding task and returns the refined result.|
 
+#### Workflow diagrams
+
+- **Chain Workflow**
+
+![Chain Workflow](agent-workflow-architecture/src/main/resources/static/Chain_Workflow.webp)
+
+- **Routing Workflow**
+
+![Routing Workflow](agent-workflow-architecture/src/main/resources/static/Routing_Workflow.png)
+
+- **Parallelization Workflow**
+
+![Parallelization Workflow](agent-workflow-architecture/src/main/resources/static/Parallelization_Workflow.webp)
+
+- **Orchestrator Workflow**
+
+![Orchestrator Workflow](agent-workflow-architecture/src/main/resources/static/Orchestrator_Workflow.webp)
+
+- **Evaluator/Optimizer Workflow**
+
+![Evaluator/Optimizer Workflow](agent-workflow-architecture/src/main/resources/static/Evaluator_Optimizer_Workflow.webp)
+
+- **Augmented LLM Pattern**
+
+![Augmented LLM](agent-workflow-architecture/src/main/resources/static/Augmented_LLM.webp)
+
 ---
 
 ### 2. ai-agents-bedrock
@@ -105,6 +131,24 @@ A travel assistant agent using Google ADK (Agent Development Kit). Provides trav
 | Endpoint                                 | Method | Description                                                                                  |
 |-------------------------------------------|--------|----------------------------------------------------------------------------------------------|
 | `/{user}/travel/plan?question=...`       | GET    | Asks a travel planning question for a specific user. Integrates weather and search agents.   |
+
+#### Get a free Google API key (Google AI Studio)
+
+1. Open the Google AI Studio API key page: [Google AI Studio](https://aistudio.google.com/apikey)
+2. Sign in with your Google account.
+3. Click "Create API key" and follow the prompt to generate a key.
+4. Copy the key. Treat it like a secret.
+5. In the module root `ai-agents-google-adk/`, create a `.env` file (if it doesn't exist) and add:
+
+```env
+GOOGLE_API_KEY=your-google-api-key
+```
+
+6. Start the module: `cd ai-agents-google-adk && docker compose up --build`
+
+Notes:
+- **Free tier** is available but subject to quota and regional availability. Usage may incur costs beyond free limits.
+- Do not commit `.env` to version control.
 
 ---
 

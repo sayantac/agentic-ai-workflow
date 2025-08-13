@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@Tag(name = "Wine", description = "Wine assistant endpoints powered by Ollama")
+@Tag(name = "Wine Connoisseur", description = "Wine assistant endpoints powered by Ollama")
 public class WineController {
 
     private final ChatClient chatClient;
@@ -40,15 +40,15 @@ public class WineController {
     }
 
     @GetMapping("/{user}/ai/chat")
-    @Operation(summary = "Chat with wine assistant", description = "Conversational chat with memory for a given user.")
+    @Operation(summary = "Chat with LLM", description = "Conversational chat with memory for a given user.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Response generated successfully")
     })
-    String inquire(
+    String chatWithLLM(
             @Parameter(description = "Username or session identifier")
             @PathVariable("user") String user,
-            @Parameter(description = "User message to the assistant")
-            @RequestParam(value = "message", defaultValue = "Hello LLM") String userInput) {
+            @Parameter(description = "User message to the assistant", example = "What is AI agents?")
+            @RequestParam String question) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -58,7 +58,7 @@ public class WineController {
 
         return this.chatClient
                 .prompt("provide succinct answers")
-                .user(userInput)
+                .user(question)
                 .advisors(chatMemoryAdvisor)
                 .call()
                 .content();
@@ -71,12 +71,12 @@ public class WineController {
                     content = @Content(schema = @Schema(implementation = Document.class)))
     })
     public List<Document> query(
-            @Parameter(description = "Query text for similarity search")
-            @RequestParam(value = "message", defaultValue = "tasty wine") String message) {
+            @Parameter(description = "Query text for similarity search", example = "What are some tasty wines?")
+            @RequestParam String question) {
         return this.vectorStore
                 .similaritySearch(
                         SearchRequest.builder()
-                                .query(message)
+                                .query(question)
                                 .topK(3)
                                 .build()
                 );
@@ -89,16 +89,16 @@ public class WineController {
                     content = @Content(schema = @Schema(implementation = Document.class)))
     })
     public List<Document> queryWithMeta(
-            @Parameter(description = "Query text for similarity search")
-            @RequestParam(value = "search_query", defaultValue = "tasty wine") String message,
-            @Parameter(description = "Metadata filter value for title field")
-            @RequestParam(value = "meta_query", defaultValue = "Grizzly Peak") String meta_query
+            @Parameter(description = "Query text for similarity search", example = "What are some tasty wines?")
+            @RequestParam String search_query,
+            @Parameter(description = "Metadata filter value for title field", example = "Castoro Cellars 2006 Roussanne (Paso Robles)")
+            @RequestParam String meta_filter
     ) {
         return vectorStore.similaritySearch(
                 SearchRequest.builder()
-                        .query(message)
+                        .query(search_query)
                         .topK(3)
-                        .filterExpression("title == '"+ meta_query+"'")
+                        .filterExpression("title == '"+ meta_filter+"'")
                         .build()
         );
     }
@@ -108,11 +108,11 @@ public class WineController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Tool executed successfully")
     })
-    String generation(
+    String toolCall(
             @Parameter(description = "Username or session identifier")
             @PathVariable("user") String user,
-            @Parameter(description = "User message for the tool")
-            @RequestParam(value = "message", defaultValue = "What wine do you suggest me?") String userInput) {
+            @Parameter(description = "User message for the tool", example = "Suggest some sparkling wines?")
+            @RequestParam String question) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -122,7 +122,7 @@ public class WineController {
 
         return this.chatClient
                 .prompt()
-                .user(userInput)
+                .user(question)
                 .advisors(chatMemoryAdvisor)
                 .tools(new WineTool(this.vectorStore)) // Access to vector db
                 .call()
@@ -138,8 +138,8 @@ public class WineController {
     WineDetails structure(
             @Parameter(description = "Username or session identifier")
             @PathVariable("user") String user,
-            @Parameter(description = "User message for structured output")
-            @RequestParam(value = "message", defaultValue = "What wine do you suggest me?") String userInput) {
+            @Parameter(description = "User message for structured output", example = "Can you suggest me three tropical wines?")
+            @RequestParam String question) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -149,7 +149,7 @@ public class WineController {
 
         return this.chatClient
                 .prompt("Return only the title and description")
-                .user(userInput)
+                .user(question)
                 .advisors(chatMemoryAdvisor)
                 .tools(new WineTool(this.vectorStore))
                 .call()
@@ -164,8 +164,8 @@ public class WineController {
     String rag(
             @Parameter(description = "Username or session identifier")
             @PathVariable("user") String user,
-            @Parameter(description = "User message to the assistant")
-            @RequestParam(value = "message", defaultValue = "What is wine?") String userInput) {
+            @Parameter(description = "User message to the assistant", example = "Can you suggest me three aromatic wines?")
+            @RequestParam String question) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -178,7 +178,7 @@ public class WineController {
 
         return this.chatClient
                 .prompt("Please use advisors for answering wine related queries")
-                .user(userInput)
+                .user(question)
                 .advisors(chatMemoryAdvisor, questionAnswerAdvisor) // RAG goes here
                 .call()
                 .content();
@@ -192,8 +192,8 @@ public class WineController {
     String guardrail(
             @Parameter(description = "Username or session identifier")
             @PathVariable("user") String user,
-            @Parameter(description = "User message to the assistant")
-            @RequestParam(value = "message", defaultValue = "What is wine?") String userInput) {
+            @Parameter(description = "User message to the assistant", example = "Can you suggest me three aromatic wines?")
+            @RequestParam String question) {
 
         var chatMemoryAdvisor = this.advisorMap.computeIfAbsent(user,
                 x -> MessageChatMemoryAdvisor
@@ -209,7 +209,7 @@ public class WineController {
 
         return this.chatClient
                 .prompt("Please use advisors for answering wine related queries")
-                .user(userInput)
+                .user(question)
                 .advisors(safeguardAdvisor) // guard the content
                 .advisors(chatMemoryAdvisor, questionAnswerAdvisor)
                 .call()

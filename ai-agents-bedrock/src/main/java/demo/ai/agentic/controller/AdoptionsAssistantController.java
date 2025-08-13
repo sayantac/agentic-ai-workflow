@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@Tag(name = "Adoption", description = "Dog adoption assistant endpoints powered by Bedrock")
+@Tag(name = "Pooch Palace", description = "Dog adoption assistant endpoints powered by AWS Bedrock")
 public class AdoptionsAssistantController {
 
     private final ChatClient singularity;
@@ -39,7 +39,7 @@ public class AdoptionsAssistantController {
     String inquire(
             @Parameter(description = "Username or session identifier")
             @PathVariable("user") String user,
-            @Parameter(description = "User question")
+            @Parameter(description = "User question", example = "Do you have any neurotic dogs for adoption?")
             @RequestParam String question) {
 
         var advisor = this.advisorMap.computeIfAbsent(user,

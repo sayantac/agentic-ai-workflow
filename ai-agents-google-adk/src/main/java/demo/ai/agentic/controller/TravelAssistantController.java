@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@Tag(name = "Travel", description = "Travel planning assistant endpoints powered by Google ADK")
+@Tag(name = "Travel Planner", description = "Travel planning assistant endpoints powered by Google ADK")
 public class TravelAssistantController {
 
     private final InMemoryRunner runner;
@@ -34,14 +34,14 @@ public class TravelAssistantController {
     }
 
     @GetMapping("/{user}/travel/plan")
-    @Operation(summary = "Ask travel planning assistant", description = "Plans trips using the Google ADK agent for a given user session.")
+    @Operation(summary = "Ask travel planning assistant", description = "Plans day trips based on weather conditions using the Google ADK.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Travel plan generated successfully")
     })
-    String travelPlanner(
+    String planTrip(
             @Parameter(description = "Username or session identifier")
             @PathVariable("user") String user,
-            @Parameter(description = "User question")
+            @Parameter(description = "User question", example = "Plan my day in Gurgaon today?")
             @RequestParam String question) {
 
         // Get or create a session for the user
