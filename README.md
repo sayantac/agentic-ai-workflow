@@ -9,7 +9,7 @@ This repository contains multiple independent AI-powered Spring Boot application
 1. [Repository Structure](#repository-structure)
 2. [Common Setup Requirements](#common-setup-requirements)
 3. [Module Overviews & API Docs](#module-overviews--api-docs)
-    - [agent-workflow-architecture](#agent-workflow-architecture)
+    - [agentic-workflow-architecture](#agentic-workflow-architecture)
     - [ai-agents-bedrock](#ai-agents-bedrock)
     - [ai-agents-google-adk](#ai-agents-google-adk)
     - [ai-agents-ollama](#ai-agents-ollama)
@@ -23,7 +23,8 @@ This repository contains multiple independent AI-powered Spring Boot application
 ```
 agentic-ai-workflow/
 │
-├── agent-workflow-architecture/   # Agentic workflow design patterns
+├── agentic-workflow-architecture/   # Agentic workflow design patterns
+├── agentic-mcp-server/             # Spring AI MCP server (weather + dog adoption tools)
 ├── ai-agents-bedrock/             # AWS Bedrock-powered dog adoption assistant
 ├── ai-agents-google-adk/          # Google ADK-powered travel assistant
 ├── ai-agents-ollama/              # Ollama LLM-powered wine assistant
@@ -36,7 +37,7 @@ agentic-ai-workflow/
 
 ## Common Setup Requirements
 
-- **Docker Desktop** (latest)
+- **Docker Desktop** (latest) or **Docker in WSL2**
 - **Docker Compose**
 - **Java 21** (for local builds)
 - **Maven** (for local builds)
@@ -47,7 +48,7 @@ agentic-ai-workflow/
 
 ## Module Overviews & API Docs
 
-### 1. agent-workflow-architecture
+### 1. agentic-workflow-architecture
 
 **Purpose:**  
 Demonstrates various agentic workflow patterns (chain, routing, parallelization, orchestration, evaluation/optimization) using Spring Boot. This is a reference implementation for building complex AI agent workflows.
@@ -71,27 +72,27 @@ Demonstrates various agentic workflow patterns (chain, routing, parallelization,
 
 - **Chain Workflow**
 
-![Chain Workflow](agent-workflow-architecture/src/main/resources/static/Chain_Workflow.webp)
+![Chain Workflow](agentic-workflow-architecture/src/main/resources/static/Chain_Workflow.webp)
 
 - **Routing Workflow**
 
-![Routing Workflow](agent-workflow-architecture/src/main/resources/static/Routing_Workflow.png)
+![Routing Workflow](agentic-workflow-architecture/src/main/resources/static/Routing_Workflow.png)
 
 - **Parallelization Workflow**
 
-![Parallelization Workflow](agent-workflow-architecture/src/main/resources/static/Parallelization_Workflow.webp)
+![Parallelization Workflow](agentic-workflow-architecture/src/main/resources/static/Parallelization_Workflow.webp)
 
 - **Orchestrator Workflow**
 
-![Orchestrator Workflow](agent-workflow-architecture/src/main/resources/static/Orchestrator_Workflow.webp)
+![Orchestrator Workflow](agentic-workflow-architecture/src/main/resources/static/Orchestrator_Workflow.webp)
 
 - **Evaluator/Optimizer Workflow**
 
-![Evaluator/Optimizer Workflow](agent-workflow-architecture/src/main/resources/static/Evaluator_Optimizer_Workflow.webp)
+![Evaluator/Optimizer Workflow](agentic-workflow-architecture/src/main/resources/static/Evaluator_Optimizer_Workflow.webp)
 
 - **Augmented LLM Pattern**
 
-![Augmented LLM](agent-workflow-architecture/src/main/resources/static/Augmented_LLM.webp)
+![Augmented LLM](agentic-workflow-architecture/src/main/resources/static/Augmented_LLM.webp)
 
 ---
 
@@ -217,7 +218,7 @@ GOOGLE_API_KEY=your-google-api-key
 ```
 
 ```env
-# agent-workflow-architecture/.env
+# agentic-workflow-architecture/.env
 OPENAI_API_KEY=your-openai-api-key
 ```
 
@@ -280,7 +281,7 @@ cd ai-agents-google-adk && docker compose up --build
 ```
 
 ```bash
-cd agent-workflow-architecture && docker compose up --build
+cd agentic-workflow-architecture && docker compose up --build
 ```
 
 ### Swagger / OpenAPI
