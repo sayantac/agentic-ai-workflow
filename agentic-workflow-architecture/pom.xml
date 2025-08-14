@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>agent-workflow-architecture</artifactId>
+    <artifactId>agentic-workflow-architecture</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

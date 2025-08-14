@@ -17,7 +17,8 @@
 		<module>ai-agents-bedrock</module>
 		<module>ai-agents-ollama</module>
         <module>ai-agents-google-adk</module>
-        <module>agent-workflow-architecture</module>
+        <module>agentic-workflow-architecture</module>
+        <module>agentic-mcp-server</module>
     </modules>
 	<properties>
 		<java.version>21</java.version>

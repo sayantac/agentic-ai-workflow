@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: agentic-ai-mcp-server
+
+server:
+  port: 8081
+
+

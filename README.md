@@ -185,37 +185,19 @@ A wine recommendation and information assistant powered by Ollama LLM and Chroma
 
 ## Module Execution Guidelines
 
-### How to run each module
+### Prerequisite: Build MCP Server Image
 
-Run from the respective module directory:
+Before running `ai-agents-bedrock` or `ai-agents-google-adk`, build the `agentic-mcp-server` Docker image locally. Both modules reference this image (`mcp-server:latest`) in their Docker Compose files.
 
-```bash
-cd ai-agents-bedrock && docker compose up --build
-```
+Run once from the `agentic-mcp-server/` directory:
 
 ```bash
-cd ai-agents-ollama && docker compose up --build
+docker build -t mcp-server:latest .
 ```
 
-Note for first-time startup in `ai-agents-ollama`:
-- The `ollama` container downloads and warms up required models on first run via `scripts/ollama-init.sh`. If all services start at once, the app may fail because Ollama hasn't finished startup.
-- Recommended sequence for the very first run (or after purging volumes):
-  1. Temporarily comment out the `chromadb` and `ai-agents-ollama` services in `ai-agents-ollama/docker-compose.yml`, leaving only the `ollama` service.
-  2. Start only Ollama: `docker compose up --build` and wait until the logs show models are pulled and the server is ready.
-  3. Stop the compose (`Ctrl+C`), restore the commented services, and then start all services: `docker compose up --build`.
-  4. Keep `VECTORSTORE_INITIALIZE` aligned with the guidance below to control ingestion.
+### Prerequisite: .env
 
-```bash
-cd ai-agents-google-adk && docker compose up --build
-```
-
-```bash
-cd agent-workflow-architecture && docker compose up --build
-```
-
-### .env prerequisites
-
-Each module expects a `.env` file in its root directory. This file is used by Docker Compose to inject environment variables into the containers.
+Each module except `ai-agents-ollama` expects a `.env` file in its root directory. This file is used by Docker Compose to inject environment variables into the containers.
 
 - Create a `.env` file per module directory.
 - Populate it with the required credentials and configuration for that module.
@@ -239,7 +221,7 @@ GOOGLE_API_KEY=your-google-api-key
 OPENAI_API_KEY=your-openai-api-key
 ```
 
-### ai-agents-ollama and ai-agents-bedrock: one-time vector store initialization
+### Prerequisite: One-time Vector Store Initialization
 
 Both `ai-agents-ollama` (ChromaDB) and `ai-agents-bedrock` (PostgreSQL + pgvector) require a one-time ingestion/initialization of their vector stores. This is controlled by the `VECTORSTORE_INITIALIZE` environment variable, which maps to `app.vectorstore.initialize` in Spring configuration.
 
@@ -272,6 +254,34 @@ Notes:
 - For a full reset, purge volumes and re-run with initialization enabled:
   - Bedrock: run inside `ai-agents-bedrock/`: `docker compose down -v`
   - Ollama/Chroma: run inside `ai-agents-ollama/`: `docker compose down -v`
+
+### How to run each module
+
+Run from the respective module directory:
+
+```bash
+cd ai-agents-bedrock && docker compose up --build
+```
+
+```bash
+cd ai-agents-ollama && docker compose up --build
+```
+
+Note for first-time startup in `ai-agents-ollama`:
+- The `ollama` container downloads and warms up required models on first run via `scripts/ollama-init.sh`. If all services start at once, the app may fail because Ollama hasn't finished startup.
+- Recommended sequence for the very first run (or after purging volumes):
+  1. Temporarily comment out the `chromadb` and `ai-agents-ollama` services in `ai-agents-ollama/docker-compose.yml`, leaving only the `ollama` service.
+  2. Start only Ollama: `docker compose up --build` and wait until the logs show models are pulled and the server is ready.
+  3. Stop the compose (`Ctrl+C`), restore the commented services, and then start all services: `docker compose up --build`.
+  4. Keep `VECTORSTORE_INITIALIZE` aligned with the guidance below to control ingestion.
+
+```bash
+cd ai-agents-google-adk && docker compose up --build
+```
+
+```bash
+cd agent-workflow-architecture && docker compose up --build
+```
 
 ### Swagger / OpenAPI
 
