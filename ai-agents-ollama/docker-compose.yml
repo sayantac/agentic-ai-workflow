@@ -16,48 +16,48 @@ services:
       start_period: 30s
     entrypoint: [ "/bin/bash", "/ollama-init.sh" ]
 
-  chromadb:
-    image: chromadb/chroma:latest
-    container_name: chromadb_ollama
-    environment:
-      - IS_PERSISTENT=TRUE
-      - PERSIST_DIRECTORY=/chroma/chroma
-      - ANONYMIZED_TELEMETRY=FALSE
-    ports:
-      - "8000:8000"
-    volumes:
-      - chroma_data:/chroma/chroma
-    healthcheck:
-      test: ["CMD", "/bin/bash", "-c", "cat < /dev/null > /dev/tcp/localhost/8000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  ai-agents-ollama:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-      args:
-        MODULE: ai-agents-ollama
-    container_name: ai-agents-ollama
-    ports:
-      - "8080:8080"
-    environment:
-      - OLLAMA_BASE_URL=http://ollama:11434
-      - CHROMA_HOST=http://chromadb
-      - CHROMA_PORT=8000
-      - VECTORSTORE_INITIALIZE=false
-    depends_on:
-      chromadb:
-        condition: service_healthy
-      ollama:
-        condition: service_healthy
-    volumes:
-      - ./data:/app/data
-      - ./scripts:/app/scripts
-    entrypoint: ["/bin/bash", "-c", "java -jar app.jar"]
+#  chromadb:
+#    image: chromadb/chroma:latest
+#    container_name: chromadb_ollama
+#    environment:
+#      - IS_PERSISTENT=TRUE
+#      - PERSIST_DIRECTORY=/chroma/chroma
+#      - ANONYMIZED_TELEMETRY=FALSE
+#    ports:
+#      - "8000:8000"
+#    volumes:
+#      - chroma_data:/chroma/chroma
+#    healthcheck:
+#      test: ["CMD", "/bin/bash", "-c", "cat < /dev/null > /dev/tcp/localhost/8000"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#
+#  ai-agents-ollama:
+#    build:
+#      context: ..
+#      dockerfile: Dockerfile
+#      args:
+#        MODULE: ai-agents-ollama
+#    container_name: ai-agents-ollama
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - OLLAMA_BASE_URL=http://ollama:11434
+#      - CHROMA_HOST=http://chromadb
+#      - CHROMA_PORT=8000
+#      - VECTORSTORE_INITIALIZE=false
+#    depends_on:
+#      chromadb:
+#        condition: service_healthy
+#      ollama:
+#        condition: service_healthy
+#    volumes:
+#      - ./data:/app/data
+#      - ./scripts:/app/scripts
+#    entrypoint: ["/bin/bash", "-c", "java -jar app.jar"]
 
 volumes:
-  chroma_data:
-    driver: local
   ollama_data:
+#  chroma_data:
+#    driver: local

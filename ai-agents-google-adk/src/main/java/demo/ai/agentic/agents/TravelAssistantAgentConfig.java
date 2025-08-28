@@ -67,7 +67,7 @@ public class TravelAssistantAgentConfig {
                 .collect(Collectors.toCollection(ArrayList::new));
 
         LlmAgent googleSearchAgent = LlmAgent.builder()
-                .model("gemini-2.0-flash")
+                .model("gemini-2.5-flash")
                 .name("google_search_agent")
                 .description("Search Google for current information")
                 .instruction("""
