@@ -46,7 +46,7 @@ services:
 #      - OLLAMA_BASE_URL=http://ollama:11434
 #      - CHROMA_HOST=http://chromadb
 #      - CHROMA_PORT=8000
-#      - VECTORSTORE_INITIALIZE=false
+#      - VECTORSTORE_INITIALIZE=true
 #    depends_on:
 #      chromadb:
 #        condition: service_healthy
